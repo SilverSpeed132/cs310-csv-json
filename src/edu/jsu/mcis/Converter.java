@@ -52,11 +52,33 @@ public class Converter {
             List<String[]> full = reader.readAll();
             Iterator<String[]> iterator = full.iterator();
             
-            JSONObject jsonObject = new JSONObject();
+            LinkedHashMap<String, String> jsonObject = new LinkedHashMap<>();
+
             
             // INSERT YOUR CODE HERE
+            String[] trueHeadings = new String[3];
+            trueHeadings[0]="colHeadings";
+            trueHeadings[1]="rowHeadings";
+            trueHeadings[2]="data";
             
+            String[] headings = iterator.next();
+            
+            JSONArray records = new JSONArray();
+            String[] record;
+            String jsonString = "";
+            
+            while(iterator.hasNext()){
+            record = iterator.next();
+                jsonObject = new LinkedHashMap<>();
+                for (int i=0; i < headings.length; ++i){
+                    jsonObject.put(headings[i],record[i]);
+                }
+                records.add(jsonObject);
+            }
+            jsonString = JSONValue.toJSONString(records);
+            results = jsonString;
         }
+        
         
         catch(IOException e) { return e.toString(); }
         
@@ -70,13 +92,22 @@ public class Converter {
         
         try {
             
+            String[] csvData = null;
+            
             JSONParser parser = new JSONParser();
             JSONObject jsonObject = (JSONObject)parser.parse(jsonString);
             
             StringWriter writer = new StringWriter();
-            CSVWriter csvWriter = new CSVWriter(writer, ',', '"', '\n');
+            CSVWriter csvWriter;
+            csvWriter = new CSVWriter(writer, ',', '"', '\n');
             
             // INSERT YOUR CODE HERE
+            
+            csvData = new String[] {jsonString};
+            
+            csvWriter.writeNext(csvData);
+            String csvString = writer.toString();
+            results = csvString;
             
         }
         
