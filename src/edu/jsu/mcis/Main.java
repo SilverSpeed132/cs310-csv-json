@@ -1,6 +1,8 @@
 package edu.jsu.mcis;
 
+import com.opencsv.CSVReader;
 import java.io.*;
+import java.util.List;
 
 public class Main {
     
@@ -26,7 +28,7 @@ public class Main {
         catch(IOException e) { e.printStackTrace(); }
         
         String csvFileString = csvFile.toString().trim();
-        
+      
         // Get JSON Data
         
         StringBuilder jsonFile = new StringBuilder();

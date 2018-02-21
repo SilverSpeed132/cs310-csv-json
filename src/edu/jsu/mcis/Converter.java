@@ -52,30 +52,44 @@ public class Converter {
             List<String[]> full = reader.readAll();
             Iterator<String[]> iterator = full.iterator();
             
-            LinkedHashMap<String, String> jsonObject = new LinkedHashMap<>();
-
+            //LinkedHashMap<String, String> jsonObject = new LinkedHashMap<>();
+            JSONObject jsonObject = new JSONObject();
             
             // INSERT YOUR CODE HERE
-            String[] trueHeadings = new String[3];
-            trueHeadings[0]="colHeadings";
-            trueHeadings[1]="rowHeadings";
-            trueHeadings[2]="data";
             
-            String[] headings = iterator.next();
+            String[] cols = iterator.next();
+            JSONArray colHeaders = new JSONArray();
             
-            JSONArray records = new JSONArray();
+            for(String field: cols){
+                colHeaders.add(field);
+            }
+            jsonObject.put("colHeaders",colHeaders);
+            
+            
+            JSONArray id = new JSONArray();
+            JSONArray dataKeeper = new JSONArray();
+            JSONArray dataFinal = new JSONArray();
+            
             String[] record;
             String jsonString = "";
             
             while(iterator.hasNext()){
-            record = iterator.next();
-                jsonObject = new LinkedHashMap<>();
-                for (int i=0; i < headings.length; ++i){
-                    jsonObject.put(headings[i],record[i]);
+                record = iterator.next();
+                //JSONArray dataKeeper = new JSONArray();
+                for (int i=0; i < cols.length; ++i){
+                    //JSONArray dataKeeper = new JSONArray();
+                    if (i == 0){
+                        id.add(record[0]);
+                        jsonObject.put("rowHeaders", id);                      
+                    }
+                    else{                      
+                        dataKeeper.add(record[i]);
+                        dataFinal.add(dataKeeper);
+                        jsonObject.put("data",dataFinal); 
+                    }  
                 }
-                records.add(jsonObject);
             }
-            jsonString = JSONValue.toJSONString(records);
+            jsonString = JSONValue.toJSONString(jsonObject);
             results = jsonString;
         }
         
