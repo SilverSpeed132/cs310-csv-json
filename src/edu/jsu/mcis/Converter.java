@@ -52,9 +52,7 @@ public class Converter {
             List<String[]> full = reader.readAll();
             Iterator<String[]> iterator = full.iterator();
             
-            //LinkedHashMap<String, String> jsonObject = new LinkedHashMap<>();
             JSONObject jsonObject = new JSONObject();
-            
             // INSERT YOUR CODE HERE
             
             String[] cols = iterator.next();
@@ -64,31 +62,43 @@ public class Converter {
                 colHeaders.add(field);
             }
             jsonObject.put("colHeaders",colHeaders);
-            
-            
+                        
             JSONArray id = new JSONArray();
-            JSONArray dataKeeper = new JSONArray();
             JSONArray dataFinal = new JSONArray();
             
             String[] record;
             String jsonString = "";
             
+            Integer[][] dataArray = new Integer[8][4];
+            
             while(iterator.hasNext()){
                 record = iterator.next();
-                //JSONArray dataKeeper = new JSONArray();
-                for (int i=0; i < cols.length; ++i){
-                    //JSONArray dataKeeper = new JSONArray();
+                for (int i=0; i < record.length; ++i){
                     if (i == 0){
                         id.add(record[0]);
                         jsonObject.put("rowHeaders", id);                      
                     }
-                    else{                      
-                        dataKeeper.add(record[i]);
-                        dataFinal.add(dataKeeper);
-                        jsonObject.put("data",dataFinal); 
-                    }  
                 }
             }
+            
+            for (int i = 1; i < full.size(); i++){
+                Integer[] intParse = new Integer[4];
+                record = full.get(i);
+                for(int j = 1; j < record.length; j++){
+                    intParse[j-1] = Integer.parseInt(record[j]);
+                    }
+                dataArray [i-1] = intParse;
+                }
+                
+            for (int i = 0; i < 8; ++i){
+                JSONArray dataKeeper = new JSONArray();
+                for (int j = 0; j < 4; ++j){
+                    dataKeeper.add(dataArray[i][j]);
+                }
+                dataFinal.add(dataKeeper);
+            }
+            
+            jsonObject.put("data",dataFinal);
             jsonString = JSONValue.toJSONString(jsonObject);
             results = jsonString;
         }
