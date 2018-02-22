@@ -55,6 +55,7 @@ public class Converter {
             JSONObject jsonObject = new JSONObject();
             // INSERT YOUR CODE HERE
             
+            //Setting up the column headers
             String[] cols = iterator.next();
             JSONArray colHeaders = new JSONArray();
             
@@ -62,15 +63,11 @@ public class Converter {
                 colHeaders.add(field);
             }
             jsonObject.put("colHeaders",colHeaders);
-                        
+              
+            //Setting up the row headers
             JSONArray id = new JSONArray();
-            JSONArray dataFinal = new JSONArray();
-            
             String[] record;
-            String jsonString = "";
-            
-            Integer[][] dataArray = new Integer[8][4];
-            
+                        
             while(iterator.hasNext()){
                 record = iterator.next();
                 for (int i=0; i < record.length; ++i){
@@ -81,6 +78,10 @@ public class Converter {
                 }
             }
             
+            //Setting up the data
+            JSONArray dataFinal = new JSONArray();
+            Integer[][] dataArray = new Integer[8][4];
+
             for (int i = 1; i < full.size(); i++){
                 Integer[] intParse = new Integer[4];
                 record = full.get(i);
@@ -98,6 +99,8 @@ public class Converter {
                 dataFinal.add(dataKeeper);
             }
             
+            // Putting the object together
+            String jsonString = "";
             jsonObject.put("data",dataFinal);
             jsonString = JSONValue.toJSONString(jsonObject);
             results = jsonString;
@@ -127,9 +130,49 @@ public class Converter {
             
             // INSERT YOUR CODE HERE
             
-            csvData = new String[] {jsonString};
+            //JSON Object data collection
+            JSONArray colHeaders = new JSONArray();
+            JSONArray rowHeaders = new JSONArray();
+            JSONArray data = new JSONArray();
             
-            csvWriter.writeNext(csvData);
+            colHeaders = (JSONArray)jsonObject.get("colHeaders");
+            rowHeaders = (JSONArray)jsonObject.get("rowHeaders");
+            data = (JSONArray)jsonObject.get("data");
+            
+            //Creating containers and storing information within
+            String [] cols = new String[5];
+            String[] ids = new String[8];
+            String[][] dataArray = new String[8][4];
+            String[][] rowsFinal = new String[8][5];  //Is used to combine ids and dataArray later on
+            
+            for (int i = 0; i < cols.length; i++){
+                cols[i] = (String)colHeaders.get(i);
+            }
+            for(int i = 0; i <ids.length; i++){
+                ids[i] = (String)rowHeaders.get(i);
+            }
+            for(int i = 0; i < 8; i++){
+                JSONArray dataLine = (JSONArray)data.get(i);
+                for(int j = 0; j < 4; j++){
+                    dataArray[i][j] = dataLine.get(j).toString();
+                }
+            }
+            
+            //Creating the CSV File columns
+            csvWriter.writeNext(cols);
+            
+            //Creating the CSV File Rows
+            for (int i= 0; i < 8; i++){
+                rowsFinal [i][0] = ids[i];
+                for (int j = 1; j < 5; j++){
+                    rowsFinal[i][j] = dataArray [i][j-1];
+                }
+            }
+            
+            for(String[] field : rowsFinal){
+                csvWriter.writeNext(field);
+            }
+            
             String csvString = writer.toString();
             results = csvString;
             
